@@ -1,0 +1,96 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model: Stores user information
+model User {
+  id                String          @id @default(uuid())
+  number            String          @unique
+  name              String?
+  verified          Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  tasks             Task[]          // Relation to tasks created by the user
+  subscriptions     Subscription[]  // Relation to the user's subscriptions
+  adminId           String?         // Optional foreign key for Admin
+  admin             Admin?          @relation(fields: [adminId], references: [id]) // Relation to Admin
+}
+
+// Admin model: For managing users and subscriptions
+model Admin {
+  id                String          @id @default(uuid())
+  username          String          @default("")
+  password          String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  users             User[]          // Relation to all users managed by the admin
+  subscriptions     Subscription[]  // Relation to all subscriptions
+}
+
+// Task model: Represents tasks created by users
+model Task {
+  id                String          @id @default(uuid())
+  title             String
+  description       String
+  category          String
+  priority          TaskPriority    @default(Low) // Enum for priority levels
+  dueDate           DateTime
+  status            TaskStatus      @default(Pending) // Enum for task statuses
+  reminder          DateTime?
+  attachment        String?
+  userId            String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  user              User            @relation(fields: [userId], references: [id])
+}
+
+// Subscription plans (e.g., Monthly, Quarterly, Yearly)
+model SubscriptionPlan {
+  id                String          @id @default(uuid())
+  name              String          @unique // e.g., Monthly, Quarterly, Yearly
+  price             Float
+  durationInMonths  Int             // Duration in months (e.g., 1 for Monthly, 3 for Quarterly, 12 for Yearly)
+  subscriptions     Subscription[]  // Relation to user subscriptions
+}
+
+// Subscriptions purchased by users
+model Subscription {
+  id                String          @id @default(uuid())
+  userId            String
+  planId            String
+  adminId           String?         // Optional foreign key for Admin
+  startDate         DateTime
+  endDate           DateTime
+  paymentStatus     PaymentStatus   @default(Pending)
+  user              User            @relation(fields: [userId], references: [id])
+  plan              SubscriptionPlan @relation(fields: [planId], references: [id])
+  admin             Admin?          @relation(fields: [adminId], references: [id]) // Relation to Admin
+}
+
+// Enum for task priority levels
+enum TaskPriority {
+  Low
+  Medium
+  High
+}
+
+// Enum for task statuses
+enum TaskStatus {
+  Pending
+  InProgress
+  Completed
+}
+
+// Enum for payment statuses
+enum PaymentStatus {
+  Success
+  Fail
+  Pending
+}
