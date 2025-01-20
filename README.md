@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Turborepo starter
 
 This is an official starter Turborepo.
@@ -82,3 +83,7 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+=======
+# Flow_Waves
+This is a all in one app where user can able to make tasks, track their day to day lifestyle.
+>>>>>>> 10bd8995470850761529997c65376c80dd909cbe
